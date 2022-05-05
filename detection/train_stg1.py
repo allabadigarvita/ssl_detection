@@ -31,7 +31,7 @@ from tensorpack.callbacks import JSONWriter
 from config import config as cfg
 from config import finalize_configs
 from data import get_train_dataflow
-from dataset import register_coco, register_voc
+from dataset import register_coco, register_voc, register_berry
 
 from FasterRCNN.eval import EvalCallback
 from FasterRCNN.modeling.generalized_rcnn import ResNetC4Model, ResNetFPNModel
@@ -90,11 +90,12 @@ if __name__ == '__main__':
     cfg.update_args(voc_config)
     sfx = cfg.update_args(args.config)
 
-  try:
-    register_voc(cfg.DATA.BASEDIR)  # add VOC datasets to the registry
-  except:
-    logger.warning('VOC does not find!')
-  register_coco(cfg.DATA.BASEDIR)  # add COCO datasets to the registry
+  #try:
+    #register_voc(cfg.DATA.BASEDIR)  # add VOC datasets to the registry
+  #except:
+  #  logger.warning('VOC does not find!')
+  #register_coco(cfg.DATA.BASEDIR)  # add COCO datasets to the registry
+  register_berry(cfg.DATA.BASEDIR)
 
   # Setup logging ...
   is_horovod = cfg.TRAINER == 'horovod'
@@ -196,3 +197,4 @@ if __name__ == '__main__':
     trainer = SyncMultiGPUTrainerReplicated(
         cfg.TRAIN.NUM_GPUS, average=False, mode='nccl')
   launch_train_with_config(traincfg, trainer)
+

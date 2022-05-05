@@ -36,7 +36,7 @@ from tensorpack.tfutils import SmartInit, get_tf_version_tuple
 from tensorpack.tfutils.export import ModelExporter
 from tensorpack.utils import fs, logger
 
-from dataset import register_coco, register_voc
+from dataset import register_coco, register_voc, register_berry
 from config import config as cfg
 from config import finalize_configs
 
@@ -121,6 +121,7 @@ def predict_unlabeled(model,
       final_viz = draw_final_outputs(img, results)
 
       viz = tpviz.stack_patches([bg_viz, fg_viz, final_viz], 2, 2)
+      viz = final_viz
 
       if os.environ.get('DISPLAY', None):
         tpviz.interactive_imshow(viz)
@@ -221,11 +222,12 @@ if __name__ == '__main__':
   args = parser.parse_args()
   if args.config:
     cfg.update_args(args.config)
-  try:
-    register_voc(cfg.DATA.BASEDIR)  # add VOC datasets to the registry
-  except NotImplementedError:
-    logger.warning('VOC does not find!')
-  register_coco(cfg.DATA.BASEDIR)  # add COCO datasets to the registry
+  #try:
+  #  register_voc(cfg.DATA.BASEDIR)  # add VOC datasets to the registry
+  #except NotImplementedError:
+  #  logger.warning('VOC does not find!')
+  #register_coco(cfg.DATA.BASEDIR)  # add COCO datasets to the registry
+  register_berry(cfg.DATA.BASEDIR)
   MODEL = ResNetFPNModel() if cfg.MODE_FPN else ResNetC4Model()
 
   if not tf.test.is_gpu_available():
@@ -272,3 +274,4 @@ if __name__ == '__main__':
       predictor = OfflinePredictor(predcfg)
       for _, img in enumerate(tqdm.tqdm(df, total=len(df), smoothing=0.5)):
         predict_image(img[0], predictor)
+
